@@ -19,10 +19,10 @@ class Reach24Problem:
         self.shot_type = shot_type
         self.result_path = None
 
-    def get_prompt(self, input: str) -> str:
+    def get_prompt(self, input: str):
         if self.prompt_type in ["standard", "cot"] and self.shot_type in ["zero_shot", "five_shot"]:
             base_prompt = getattr(prompt, self.prompt_type + "_prompt")[self.shot_type]
-            return base_prompt + [{"role": "user", "content": input}]
+            return [{"role": "system", "content": base_prompt}, {"role": "user", "content": input}]
         else:
             raise ValueError("Invalid prompt_type or shot_type.")
 
@@ -30,7 +30,7 @@ class Reach24Problem:
         return self.data[int(index)]
 
     def save_result(self, name: str, result):
-        filepath = f"{name}({self.shot_type})_"
+        filepath = f"{name}({self.shot_type})"
         dir_path = os.path.join("results", "reach24", self.prompt_type)
         os.makedirs(dir_path, exist_ok=True)
         max_file_index = 0
@@ -40,10 +40,10 @@ class Reach24Problem:
                     file_index = filename[len(filepath):-5]
                     current_index = int(file_index) if file_index else 1
                     max_file_index = max(max_file_index, current_index)
-                except  ValueError:
+                except ValueError:
                     continue
 
-        filepath = os.path.join(dir_path, f"{filepath}_{max_file_index + 1}.json")
+        filepath = os.path.join(dir_path, f"{filepath}{max_file_index + 1}.json")
         self.result_path = filepath
         with open(filepath, "w", encoding="utf-8") as f:
             json.dump(result, f, ensure_ascii=False, indent=4)
@@ -69,16 +69,29 @@ class Reach24Problem:
         return abs(result - 24) < 1e-6
 
 
-    def evaluate_result(self, prompt_type="standard", filepath=None):
-        sr = 0
-        filepath = self.result_path if filepath is None else filepath
-        with open(filepath, "r", encoding="utf-8") as f:
-            result = json.load(f)
-            datasize = len(result)
-            for index, ans in result.items():
-                if prompt_type == "cot":
-                    ans = ans.split('\n')[-1]
-                if self.validate_answer(index, ans):
-                    sr += 1
+    def evaluate_result(self, name, prompt_type="standard"):
+        filepath = f"{name}({self.shot_type})"
+        dir_path = os.path.join("results", "reach24", prompt_type)
+        matching_files = []
+        for filename in os.listdir(dir_path):
+            if filename.startswith(filepath) and filename.endswith(".json"):
+                matching_files.append(os.path.join(dir_path, filename))
+        if not matching_files:
+            print(f"No matching files found for {filepath}*.json.")
+            return 0.0
+        sr = 0.0
+        datasize = 0
+        for filepath in matching_files:
+            with open(filepath, "r", encoding="utf-8") as f:
+                result = json.load(f)
+                datasize += len(result)
+                c_sr = 0.0
+                for index, ans in result.items():
+                    if prompt_type == "cot":
+                        ans = ans.split('\n')[-1]
+                    if self.validate_answer(index, ans):
+                        sr += 1
+                        c_sr += 1
+                print(f"{filepath}: {(c_sr / len(result)):.3%}")
         sr /= datasize
         return sr

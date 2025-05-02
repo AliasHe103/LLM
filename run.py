@@ -7,7 +7,7 @@ from agent import Agent
 
 key = os.getenv("DASHSCOPE_API_KEY")
 url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
-name = "qwen-max"
+name = "deepseek-v3"
 agent = Agent(
     key,
     url,
@@ -17,7 +17,8 @@ agent = Agent(
 sr = agent.eval(
     problem_type="reach24",
     prompt_type="cot",
-    shot_type="five_shot"
+    shot_type="five_shot",
+    run=True
 )
 
 print(f"{name}, SR: {sr}")
