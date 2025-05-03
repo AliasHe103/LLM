@@ -6,13 +6,15 @@ from collections import Counter
 import pandas as pd
 
 import prompt.reach24 as prompt
+from problems.problem import Problem
 
 ALLOWED_CHARS = set("0123456789+-*/()=")
 EXP_PATTERN = re.compile(r'-?\d+')
 REPEAT_OP = re.compile(r'[+\-*/]{2,}')
 
-class Reach24Problem:
+class Reach24Problem(Problem):
     def __init__(self, prompt_type="standard", shot_type="five_shot", file="data/reach24.csv"):
+        super().__init__()
         self.data = list(pd.read_csv(file)['Puzzles'])
         self.size = len(self.data)
         self.prompt_type = prompt_type

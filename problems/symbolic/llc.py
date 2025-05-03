@@ -2,9 +2,12 @@ import json
 import os
 
 import prompt.llc as prompt
+from problems.problem import Problem
 
-class LLCProblem:
+
+class LLCProblem(Problem):
     def __init__(self, prompt_type="standard", shot_type="five_shot", file="data/llc.json"):
+        super().__init__()
         with open(file, "r") as f:
             self.data = json.load(f)
         self.size = len(self.data)
