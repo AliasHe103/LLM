@@ -14,14 +14,14 @@ class Agent:
         self.history = []
         self.problem = None
 
-    def predict(self, messages: list[dict]):
+    def predict(self, messages: list):
         try:
             # self.history += messages[-1]
             response = self.llm.chat.completions.create(
                 model=self.name,
                 messages=messages,
                 temperature=0.3,
-                stop=["END"]
+                stop=["END", "\n\n"]
             )
 
             # self.history.append({"role": "assistant", "content": response})
@@ -30,6 +30,7 @@ class Agent:
             print(e)
             return None
 
+    @staticmethod
     def get_problem(self, problem_type, prompt_type, shot_type):
         if problem_type == "reach24":
             return Reach24Problem(prompt_type, shot_type)
@@ -38,6 +39,7 @@ class Agent:
         else:
             raise ValueError("Invalid problem_type.")
 
+    @staticmethod
     def get_task_index(self, problem_type) -> tuple[int, int]:
         """
         range(start_id, end_id)
@@ -58,8 +60,7 @@ class Agent:
             if run:
                 start, end = self.get_task_index(problem_type)
                 for index in range(start, end):
-                    if index % 10 == 0:
-                        print(f"Evaluating task{index}...")
+                    print(f"Evaluating task{index}...")
                     input = self.problem.get_input(index)
                     prompt = self.problem.get_prompt(input)
                     try:
@@ -77,3 +78,4 @@ class Agent:
             if result:
                 self.problem.save_result(self.name, result)
                 raise
+            return None

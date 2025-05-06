@@ -20,6 +20,7 @@ class Reach24Problem(Problem):
         self.prompt_type = prompt_type
         self.shot_type = shot_type
         self.result_path = None
+        self.value_cache = {}
 
     def get_prompt(self, input: str):
         if self.prompt_type in ["standard", "cot"] and self.shot_type in ["zero_shot", "five_shot"]:
@@ -83,6 +84,7 @@ class Reach24Problem(Problem):
             return 0.0
         sr = 0.0
         datasize = 0
+        matching_files.sort()
         for filepath in matching_files:
             with open(filepath, "r", encoding="utf-8") as f:
                 result = json.load(f)

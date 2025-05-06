@@ -2,15 +2,15 @@ standard_prefix = '''You are an arithmetic assistant in reaching 24.
 ### Rules:
 1. Use each number exactly as it appears in the input.
 2. Only + - * / operators allowed.
-3. Provide the final result in the format: `<equation> = 24 END` with NO explanations.
+3. Provide the final result in the format: `<equation> = 24` with NO explanations.
 '''
+
 cot_prefix = '''You are an arithmetic assistant. Think step-by-step to reach 24.
 ### Rules:
-1. Use each number exactly as it appears in the input.
-2. Only + - * / operators allowed.
-3. Choose two remaining numbers and one operator to obtain a new number per step.
-4. Provide the final result in the format: `<equation> = 24 END` with NO explanations.
-5. Avoid multiple attempts.
+1. Only + - * / operators allowed.
+2. Choose two remaining numbers to obtain a new number in each intermediate step.
+3. Provide your steps, and the final result in the format: `<equation> = 24` with NO explanations.
+4. NEVER do any retries in your response.
 '''
 
 standard_five_shot = '''
@@ -58,3 +58,83 @@ standard_prompt = {
 cot_prompt = {
     "five_shot": cot_five_shot
 }
+
+#tot
+input_judge_prompt = '''Evaluate if given numbers can reach 24 (sure/likely/impossible)
+10 14
+10 + 14 = 24
+sure
+11 12
+11 + 12 = 23
+12 - 11 = 1
+11 * 12 = 132
+11 / 12 = 0.91
+impossible
+4 4 10
+4 + 4 + 10 = 8 + 10 = 18
+4 * 10 - 4 = 40 - 4 = 36
+(10 - 4) * 4 = 6 * 4 = 24
+sure
+4 9 11
+9 + 11 + 4 = 20 + 4 = 24
+sure
+5 7 8
+5 + 7 + 8 = 12 + 8 = 20
+(8 - 5) * 7 = 3 * 7 = 21
+I cannot obtain 24 now, but numbers are within a reasonable range
+likely
+5 6 6
+5 + 6 + 6 = 17
+(6 - 5) * 6 = 1 * 6 = 6
+I cannot obtain 24 now, but numbers are within a reasonable range
+likely
+10 10 11
+10 + 10 + 11 = 31
+(11 - 10) * 10 = 10
+10 10 10 are all too big
+impossible
+1 3 3
+1 * 3 * 3 = 9
+(1 + 3) * 3 = 12
+1 3 3 are all too small
+impossible
+'''
+
+last_step_judge_prompt = '''Use numbers and basic arithmetic operations (+ - * /) to obtain 24. Given an input and an answer, give a judgement (sure/impossible) if the answer is correct, i.e. it uses each input exactly once and no other numbers, and reach 24.
+Input: 4 4 6 8
+Answer: (4 + 8) * (6 - 4) = 24
+Judge: 
+sure
+Input: 2 9 10 12
+Answer: 2 * 12 * (10 - 9) = 24
+Judge: 
+sure
+Input: 4 9 10 13
+Answer: (13 - 9) * (10 - 4) = 24
+Judge: 
+sure
+Input: 4 4 6 8
+Answer: (4 + 8) * (6 - 4) + 1 = 25
+Judge: 
+impossible
+Input: 2 9 10 12
+Answer: 2 * (12 - 10) = 24
+Judge: 
+impossible
+Input: 4 9 10 13
+Answer: (13 - 4) * (10 - 9) = 24
+Judge: 
+impossible
+'''
+
+propose_prompt = '''Input: 2 8 8 14
+Possible next steps:
+2 + 8 = 10 (left: 8 10 14)
+8 / 2 = 4 (left: 4 8 14)
+14 + 2 = 16 (left: 8 8 16)
+2 * 8 = 16 (left: 8 14 16)
+8 - 2 = 6 (left: 6 8 14)
+14 - 8 = 6 (left: 2 6 8)
+14 /  2 = 7 (left: 7 8 8)
+14 - 2 = 12 (left: 8 8 12)
+'''
