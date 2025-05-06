@@ -31,7 +31,7 @@ class Agent:
             return None
 
     @staticmethod
-    def get_problem(self, problem_type, prompt_type, shot_type):
+    def get_problem(problem_type, prompt_type, shot_type):
         if problem_type == "reach24":
             return Reach24Problem(prompt_type, shot_type)
         elif problem_type == "llc":
@@ -40,7 +40,7 @@ class Agent:
             raise ValueError("Invalid problem_type.")
 
     @staticmethod
-    def get_task_index(self, problem_type) -> tuple[int, int]:
+    def get_task_index(problem_type) -> tuple[int, int]:
         """
         range(start_id, end_id)
         """

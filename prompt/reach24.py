@@ -60,7 +60,7 @@ cot_prompt = {
 }
 
 #tot
-input_judge_prompt = '''Evaluate if given numbers can reach 24 (sure/likely/impossible)
+possibility_prompt = '''Evaluate if given numbers can reach 24 (sure/likely/impossible)
 10 14
 10 + 14 = 24
 sure
@@ -98,6 +98,7 @@ impossible
 (1 + 3) * 3 = 12
 1 3 3 are all too small
 impossible
+For the next input, give evaluation with NO extra explanations(just like the examples above):
 '''
 
 last_step_judge_prompt = '''Use numbers and basic arithmetic operations (+ - * /) to obtain 24. Given an input and an answer, give a judgement (sure/impossible) if the answer is correct, i.e. it uses each input exactly once and no other numbers, and reach 24.
@@ -127,6 +128,7 @@ Judge:
 impossible
 '''
 
+# 3/4=0.75, 0.75 is allowed
 propose_prompt = '''Input: 2 8 8 14
 Possible next steps:
 2 + 8 = 10 (left: 8 10 14)
@@ -137,4 +139,5 @@ Possible next steps:
 14 - 8 = 6 (left: 2 6 8)
 14 /  2 = 7 (left: 7 8 8)
 14 - 2 = 12 (left: 8 8 12)
+For the next input, give possible next steps with NO extra explanations(just like the example above):
 '''

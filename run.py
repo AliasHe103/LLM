@@ -3,7 +3,7 @@
 #%%
 import os
 
-from agent import Agent
+from agents.agent import Agent
 
 key = os.getenv("DASHSCOPE_API_KEY")
 url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
